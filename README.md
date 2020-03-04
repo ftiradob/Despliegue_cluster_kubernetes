@@ -2,6 +2,7 @@
 
 
 (PONER VAGRANT Y EXPLICACION DE LO QUE VAMOS A CONSTRUIR Y DEL ESCENARIO)
+
 En este escenario vamos a montar un cluster con Kubernetes usando 'kubeadm'
 
 
@@ -23,9 +24,9 @@ Ahora vamos a hacer la instalación en las máquinas de una serie de herramienta
 debian@kubeadm:~$ sudo apt-get update && sudo apt-get install -y apt-transport-https curl gnupg2
 debian@kubeadm:~$ curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
 OK
-debian@kubeadm:~$ cat EOF | sudo tee /etc/apt/sources.list.d/kubernetes.list
- deb https://apt.kubernetes.io/ kubernetes-xenial main
- EOF
+debian@kubeadm:~$ cat <<EOF | sudo tee /etc/apt/sources.list.d/kubernetes.list
+deb https://apt.kubernetes.io/ kubernetes-xenial main
+EOF
 deb https://apt.kubernetes.io/ kubernetes-xenial main
 debian@kubeadm:~$ sudo apt-get update
 debian@kubeadm:~$ sudo apt-get install -y kubelet kubeadm kubectl
@@ -107,6 +108,6 @@ nodo1k8s   Ready    <none>   3h37m   v1.17.3
 nodo2k8s   Ready    <none>   6m55s   v1.17.3
 ~~~
 
-INSTALACIÓN DE UNA APLICACIÓN EN UN CLUSTER CON KUBERNETES
+## INSTALACIÓN DE UNA APLICACIÓN EN UN CLUSTER CON KUBERNETES
 
 

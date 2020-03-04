@@ -47,7 +47,7 @@ Apagamos la SWAP:
 debian@kubeadm:~$ sudo swapoff -a
 ~~~
 
-Finalmente comprobamos que se ha iniciado correctamente, y además vamos a almacenar el join y el token que nos aparece al final:
+Finalmente comprobamos que el cluster se ha iniciado correctamente, y además vamos a almacenar el join y el token que nos aparece al final:
 
 ~~~
 debian@kubeadm:~$ sudo kubeadm init --pod-network-cidr=192.168.20.0/24 --apiserver-cert-extra-sans=172.22.200.210
@@ -110,4 +110,49 @@ nodo2k8s   Ready    <none>   6m55s   v1.17.3
 
 ## INSTALACIÓN DE UNA APLICACIÓN EN UN CLUSTER CON KUBERNETES
 
+Lo primero que vamos a hacer es crear 2 volúmenes mediante un fichero '.yml' para que la información sea persistente:
 
+~~~
+debian@kubeadm:~$ nano volpersistentes.yml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+    name: delegadovol1
+    labels:
+      type: local
+spec:
+   capacity:
+     storage: 1Gi
+   accessModes:
+     - ReadWriteMany
+   hostPath:
+     path: /kube/volume/delegadovol1
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+   name: delegadovol2
+   labels:
+     type: local
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: /kube/volume/delegadovol2
+debian@kubeadm:~$ kubectl apply -f volpersistentes.yml
+persistentvolume/delegadovol1 created
+persistentvolume/delegadovol2 created
+~~~
+
+Comprobamos que se han creado correctamente:
+
+~~~
+debian@kubeadm:~$ kubectl get pv
+NAME           CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS      CLAIM   STORAGECLASS   REASON   AGE
+delegadovol1   1Gi        RWX            Retain           Available                                   72s
+delegadovol2   1Gi        RWX            Retain           Available                                   72s
+~~~
+
+Tras esto, vamos a crear 

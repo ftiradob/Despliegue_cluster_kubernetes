@@ -49,7 +49,7 @@ debian@kubeadm:~$ sudo swapoff -a
 Finalmente comprobamos que se ha iniciado correctamente, y además vamos a almacenar el join y el token que nos aparece al final:
 
 ~~~
-debian@kubeadm:~$ sudo kubeadm init --pod-network-cidr=192.168.0.0/16 --apiserver-cert-extra-sans=172.22.200.210
+debian@kubeadm:~$ sudo kubeadm init --pod-network-cidr=192.168.20.0/24 --apiserver-cert-extra-sans=172.22.200.210
 ...
 Your Kubernetes control-plane has initialized successfully!
 

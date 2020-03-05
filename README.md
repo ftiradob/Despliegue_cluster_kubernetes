@@ -156,3 +156,117 @@ delegadovol2   1Gi        RWX            Retain           Available             
 ~~~
 
 Tras esto, vamos a crear 
+
+debian@kubeadm:~$ nano mariadb.yml 
+apiVersion: v1
+kind: Service
+metadata:
+  name: mariadb-servicio
+  namespace: nextcloud
+  labels:
+    app: nextcloud
+    type: database
+spec:
+  ports:
+    - port: 3306
+      targetPort: db-port
+  selector:
+    app: nextcloud
+    type: database
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mariadb-despliegue
+  namespace: nextcloud
+  labels:
+    app: nextcloud
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nextcloud
+  template:
+    metadata:
+      labels:
+        app: nextcloud
+    spec:
+      containers:
+      - name: nextcloud
+        image: mariadb
+        ports:
+        - containerPort: 3306
+          name: db-port
+        env:
+        - name: MYSQL_USER
+          value: delegado
+        - name: MYSQL_DATABASE
+          value: delegado_db
+        - name: MYSQL_PASSWORD
+          value: dios
+        - name: MYSQL_ROOT_PASSWORD
+          value: dios
+
+Ahora vamos a crear nextcloud:
+
+debian@kubeadm:~$ nano nextcloud.yml 
+apiVersion: v1
+kind: Service
+metadata:
+  name: nextcloud-servicio
+  namespace: nextcloud
+  labels:
+    app: nextcloud
+    type: frontend
+spec:
+  ports:
+    - port: 80
+  selector:
+    app: nextcloud
+  type: NodePort
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nextcloud-despliegue
+  namespace: nextcloud
+  labels:
+    app: nextcloud
+    type: frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nextcloud
+  template:
+    metadata:
+      labels:
+        app: nextcloud
+    spec:
+      containers:
+      - name: nextcloud
+        image: ftiradob/nextdelegado:v1
+        ports:
+        - containerPort: 80
+          name: nextcloud
+
+Creacion de escenario:
+
+debian@kubeadm:~$ kubectl apply -f mariadb.yml
+service/mariadb-servicio created
+deployment.apps/mariadb-despliegue created
+
+debian@kubeadm:~$ kubectl apply -f nextcloud.yml 
+service/nextcloud-servicio created
+deployment.apps/nextcloud-despliegue created
+
+
+----NOTAS----
+Borrar escenario de un namespace:
+
+debian@kubeadm:~$ kubectl delete -f nextcloud.yml
+
+Informacion de componentes desplegados en un namespace concreto:
+
+debian@kubeadm:~$ kubectl get deploy,service,pods -n nextcloud
